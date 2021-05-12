@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{49EAF5AD-C232-4286-8287-4C20F1340EB4}</ProjectGuid>
+    <ProjectGuid>{42438528-0213-43C5-AFA9-70629F74D21F}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>DungeonGameTwo</RootNamespace>
-    <AssemblyName>DungeonGameTwo</AssemblyName>
+    <RootNamespace>EscapeRoom</RootNamespace>
+    <AssemblyName>EscapeRoom</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="ProgramUI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

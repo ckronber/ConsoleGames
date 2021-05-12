@@ -46,7 +46,6 @@
     <Compile Include="Drofsnar The Bird Man\Bird.cs" />
     <Compile Include="Drofsnar The Bird Man\Drofsnar.cs" />
     <Compile Include="Drofsnar The Bird Man\FileClass.cs" />
-    <Compile Include="Drofsnar The Bird Man\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Drofsnar The Bird Man\SimplifiedBird.cs" />
   </ItemGroup>
