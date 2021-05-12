@@ -8,31 +8,38 @@ using System.Threading.Tasks;
 namespace RickMorty
 {
     public enum Item { plumbus, meeseeks, portalgun };
-   
+
     public class ProgramUI
     {
-        private int _sleepTime = 500;
+        private int _sleepTime = 5000;
         public List<Item> inventory = new List<Item>();
         //Connecting the room to the room name
         Dictionary<string, Room> Rooms = new Dictionary<string, Room>
         {
-            {"garage",garage},{"house",house},{"driveway",driveway}
+            {"garage",garage},{"house",house},{"driveway",driveway},{"laboratory",lab},{"lab",lab}
         };
 
         // Garage Splash
         public static Room garage = new Room(
             "\n\nYou're in the garage with all your junk and crap.\n\n" +
-            "Obvious exits are DRIVEWAY and HOUSE\n", new List<string> { "driveway", "house" },new List<Item> {Item.plumbus});
+            "Obvious exits are DRIVEWAY and HOUSE\n", new List<string> { "driveway", "house" }, new List<Item> { Item.plumbus }, new List<Event>{
+            new Event("Control Panel",EventType.Use,new Result("laboratory","You've opened the hatch to your LABORATORY."))
+            });
+
+        // lab Room
+        public static Room lab = new Room("\n\n\n You've entered your secret lab under the garage.\n" +
+            "It's way nicer than the rest of the house\n\n" +
+            "Ovious exits are GARAGE\n", new List<string> { "garage" }, new List<Item> { },new List<Event> { });
 
         //driveway splash
         public static Room driveway = new Room("\n\nYou're in the driveway. The car is goine but \n" +
             "the oil stain is still there. \n\n" +
-            "Obvious exits are GARAGE and YARD\n", new List<string> { "garage" }, new List<Item> {});
+            "Obvious exits are GARAGE and YARD\n", new List<string> { "garage" }, new List<Item> {},new List<Event> { });
 
         //House splash
         public static Room house = new Room("\n\nYou're in the house now. It's drab and smells like \n" +
             "lemon pine-sol with a hint of stale fart. \n\n" +
-            "Obvious exits are GARAGE and KITCHEN\n", new List<string> { "garage" }, new List<Item> { });
+            "Obvious exits are GARAGE and KITCHEN\n", new List<string> { "garage" }, new List<Item> { },new List<Event> { });
 
         public void Run()
         {
@@ -87,8 +94,24 @@ namespace RickMorty
                     {
                         if(!foundItem && command.Contains(item.ToString()))
                         {
-                            Console.WriteLine($"Congratulations, You found a(n) {item}.\n" +
-                                $"Press any key to continue...");
+                            Random rand = new Random();
+                            int flavorTextChoice = rand.Next(0, 3); // This will use 0 1 and 2 and pick a random value there 
+                            string flavorText;
+                            switch (flavorTextChoice)
+                            {
+                                case 0:
+                                    flavorText = "Don't Break it.";
+                                    break;
+                                case 1:
+                                    flavorText = "Good for you.";
+                                    break;
+                                case 2:
+                                default:
+                                    flavorText = "Fantastic.";
+                                        break;
+                            }
+                            Console.WriteLine($"Congratulations, You found a(n) {item}. {flavorText}\n" +
+                            $"Press any key to continue...");
                             currentRoom.RemoveItem(item);
                             inventory.Add(item);
                             foundItem = true;
@@ -104,7 +127,29 @@ namespace RickMorty
                 }
                 else if (command.StartsWith("use ") || command.StartsWith("activate "))
                 {
-                    Console.WriteLine("I doubt you know how");
+                    string eventMessage = "I doubt you know how";
+                    foreach(Event roomEvent in currentRoom.Events)
+                    {
+                        if(!command.Contains(roomEvent.TriggerPhrase) || roomEvent.Type != EventType.Use)
+                        {
+                            continue;
+                        }
+                        if(roomEvent.EventResult.Type == ResultType.NewExit)
+                        {
+                            currentRoom.Exits.Add(roomEvent.EventResult.ResultDestination);
+                            eventMessage = roomEvent.EventResult.ResultMessage;
+                        }
+                        else if(roomEvent.EventResult.Type == ResultType.GetItem)
+                        {
+                            inventory.Add(roomEvent.EventResult.ResultItem);
+                            eventMessage = roomEvent.EventResult.ResultMessage;
+                        }
+                        else if(roomEvent.EventResult.Type == ResultType.MessageOnly)
+                        {
+                            eventMessage = roomEvent.EventResult.ResultMessage;
+                        }
+                    }
+                    Console.WriteLine(eventMessage);
                     Thread.Sleep(_sleepTime);
                 }
                 else
@@ -122,6 +167,7 @@ namespace RickMorty
         public List<Item> Items { get; }
         public string Splash { get; }
         public List<string> Exits { get; }
+        public List<Event> Events { get; }
 
         public void RemoveItem(Item item)
         {
@@ -129,11 +175,19 @@ namespace RickMorty
                 Items.Remove(item);
         }
 
-        public Room(string splash, List<string> exits,List<Item> items)
+        public Room() { }
+        public Room(string splash, List<string> exits,List<Item> items,List<Event> events)
         {
             this.Splash = splash;
             this.Exits = exits;
             this.Items = items;
+            this.Events = events;
+        }
+
+        public void ResolveEvent(Event resolvedEvent)
+        {
+            if (Events.Contains(resolvedEvent))
+                Events.Remove(resolvedEvent);
         }
     }
 }
