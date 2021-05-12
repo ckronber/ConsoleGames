@@ -10,8 +10,8 @@ namespace EscapeRoom
     {
         static void Main(string[] args)
         {
-            ProgramUI eRoom = new ProgramUI();
-            
+            ProgramUI ERoom = new ProgramUI();
+            ERoom.Run();
         }
     }
 }
